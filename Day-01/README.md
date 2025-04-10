@@ -56,6 +56,22 @@ Inside the Ubuntu container:
 - Install curl: `apt install curl`
 - Use curl to fetch GitHub API: `curl https://api.github.com`
 
+curl is a powerful tool used to make network requests from the command line. It's especially useful in Docker development for:
+
+🧪 Testing API endpoints (e.g., curl http://localhost:5000/api)
+
+🧰 Debugging container networking (try pinging other services)
+
+📦 Downloading assets during image builds (e.g., RUN curl -LO <url> in Dockerfiles)
+
+🤖 Automating HTTP tasks in CI/CD (e.g., POSTing build status)
+
+```
+curl https://api.github.com   # Simple GET request
+curl -I https://example.com   # Fetch headers only
+curl -X POST -d "name=test" https://httpbin.org/post    # Simulate POST
+```
+
 ---
 
 ## 🧼 Cleanup
