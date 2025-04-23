@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres_db
+    environment:
+      POSTGRES_DB: mydb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mypassword
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db-init.sql:/docker-entrypoint-initdb.d/db-init.sql:ro
+    ports:
+      - "5432:5432"
+
+  mqtt:
+    image: eclipse-mosquitto:2
+    container_name: mqtt_broker
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_config:/mosquitto/config
+
+  app:
+    build: .
+    container_name: express_app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+      - mqtt
+    environment:
+      PGUSER: postgres
+      PGPASSWORD: mypassword
+      PGDATABASE: mydb
+      PGHOST: postgres
+      PGPORT: 5432
+      MQTT_BROKER_URL: mqtt://mqtt
+
+  nodered:
+    image: nodered/node-red:latest
+    container_name: node_red
+    ports:
+      - "1880:1880"
+    volumes:
+      - ./nodered:/data
+    depends_on:
+      - mqtt
+      - postgres
+    environment:
+      TZ: "UTC"
+
+volumes:
+  pgdata:
+  mosquitto_data:
+  mosquitto_config:
